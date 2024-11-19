@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NowDoThis</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="stylesheet" href="assets/fontawesome-free-6.7.0-web/css/all.min.css">
+      <style>
+        /* Reset and Basic Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Add this line */
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+            padding-top: 20px; /* Adjust the value as needed */
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #181a1b;
+            color: #e8e6e3;
+        }
+
+        /* Container for content and timer */
+        #container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 90%;
+            max-width: 1000px;
+            gap: 20px;
+        }
+
+        /* Content Styles */
+        #content {
+            flex: 1 1 600px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 30px;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode #content {
+            background: #242526;
+            border-color: #444;
+        }
+
+
+
+        /* Title Styles */
+        #app-title {
+            font-size: 2.5rem;
+            margin-bottom: 8rem;
+            text-align: center;
+            color: inherit; /* To adapt to dark mode */
+            margin-top: 2rem; /* Adjust the value as needed */
+        }
+
+        body.dark-mode #app-title {
+            color: inherit;
+        }
+
+        /* Sound Toggle Button Styles */
+        #toggle-notification-sound {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #6c8ea4;
+            margin-bottom: 10px;
+        }
+
+        #toggle-notification-sound:hover {
+            color: #5a778c;
+        }
+
+        body.dark-mode #toggle-notification-sound {
+            color: #e8e6e3;
+        }
+
+        body.dark-mode #toggle-notification-sound:hover {
+            color: #ffffff;
+        }
+
+        /* Settings Icon */
+        #settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c8ea4;
+        }
+
+        #settings-icon:hover {
+            color: #5a778c;
+        }
+
+        /* Settings Menu */
+        #settings-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            width: 200px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode #settings-menu {
+            background: #242526;
+            border-color: #444;
+        }
+
+        #settings-menu label {
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        #settings-menu input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* Close Button */
+        #close-settings {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #aaa;
+        }
+
+        #close-settings:hover {
+            color: #333;
+        }
+
+        #task {
+            font-size: 2rem;
+            margin: 40px 0;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+
+        #task.highlight {
+            background: #e0f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode #task.highlight {
+            background: #3a3b3c;
+        }
+
+        #all_done {
+            display: none;
+            font-size: 1.5rem;
+            margin: 40px 0;
+        }
+
+        #input {
+            display: none;
+        }
+
+        #input textarea {
+            width: 100%;
+            height: 20rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode #input textarea {
+            background: #3a3b3c;
+            border-color: #555;
+            color: #e8e6e3;
+        }
+
+        /* Modern Button Styles */
+        .button {
+            padding: 14px 28px;
+            font-size: 1rem;
+            background: #6c8ea4; /* Calmer light gray-blue color */
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+
+        .button:hover {
+            background: #5a778c;
+        }
+
+        .button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Buttons container */
+        #buttons {
+            display: none;
+            justify-content: center;
+        }
+
+        /* Timer Styles */
+        #timer {
+            flex: 1 1 300px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode #timer {
+            background: #242526;
+            border-color: #444;
+        }
+
+        body.dark-mode #about a {
+            color: #00afff;
+        }
+
+        #timer-display {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            width: 100px;
+            text-align: center;
+        }
+
+        #timer-display:focus {
+            outline: none;
+            border-bottom: 2px solid #6c8ea4;
+        }
+
+        /* Progress Ring */
+        .progress-ring {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px auto;
+        }
+
+        .progress-ring svg {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .progress-ring circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Timer Controls */
+        #timer-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #timer-buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        #timer-buttons .button {
+            padding: 10px 15px;
+            margin: 5px;
+        }
+
+        #timer-buttons .button i {
+            font-size: 1.2rem;
+        }
+
+        /* Sound Toggle Buttons Container */
+        #sound-toggle-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #sound-toggle-buttons button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #6c8ea4;
+            margin: 0 10px; /* Adjust spacing between buttons */
+        }
+
+        #sound-toggle-buttons button:hover {
+            color: #5a778c;
+        }
+
+        body.dark-mode #sound-toggle-buttons button {
+            color: #e8e6e3;
+        }
+
+        body.dark-mode #sound-toggle-buttons button:hover {
+            color: #ffffff;
+        }
+
+        
+
+        #time-slider {
+            width: 100%;
+            margin: 20px 0;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        #time-slider:focus {
+            outline: none;
+        }
+
+        /* Slider Styles */
+        #time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6c8ea4;
+            cursor: pointer;
+            margin-top: -6px; /* Adjusted for alignment */
+        }
+
+        #time-slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #ccc;
+            border-radius: 5px;
+        }
+
+        /* Adjusted for Mozilla */
+        #time-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6c8ea4;
+            cursor: pointer;
+        }
+
+        #time-slider::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #ccc;
+            border-radius: 5px;
+        }
+
+        #timer-controls label {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        #notification-option {
+            margin: 10px 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        #notification-option input {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Completed Tasks */
+        #completed-tasks {
+            margin-top: 40px;
+            text-align: left;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode #completed-tasks {
+            background: #242526;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        #completed-tasks-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #completed-tasks h3 {
+            margin-bottom: 20px;
+        }
+
+        #completed-list {
+            list-style: none;
+        }
+
+        #completed-list li {
+            background: #e8f5e9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            word-wrap: break-word;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode #completed-list li {
+            background: #3a3b3c;
+            color: #e8e6e3;
+        }
+
+        /* About Section */
+        #about {
+            display: none;
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            width: 250px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode #about {
+            background: #242526;
+            border-color: #444;
+        }
+
+        /* Close Button */
+        #close-about {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #aaa;
+        }
+
+        #close-about:hover {
+            color: #333;
+        }
+
+        /* Info Icon */
+        #info-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c8ea4;
+            margin-top: 20px;
+        }
+
+        #info-icon:hover {
+            color: #5a778c;
+        }
+
+        /* Hide Button */
+        #toggle-completed-tasks {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #6c8ea4;
+        }
+
+        #toggle-completed-tasks:hover {
+            color: #5a778c;
+        }
+
+        /* Dark Mode for Buttons */
+        body.dark-mode .button {
+            color: #e8e6e3;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-modal {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Dark Mode Styles for Modal */
+        body.dark-mode .modal-content {
+            background-color: #242526; /* Dark background color */
+            color: #e8e6e3;            /* Light text color */
+            border-color: #444;        /* Dark border color */
+        }
+
+        body.dark-mode .close-modal {
+            color: #aaa;
+        }
+
+        body.dark-mode .close-modal:hover,
+        body.dark-mode .close-modal:focus {
+            color: #fff;
+        }
+
+        /* Ticking Sound Toggle Button Styles */
+        #toggle-ticking-sound {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #6c8ea4;
+            margin-bottom: 10px;
+            margin-left: 10px; /* Add some space between the two buttons */
+        }
+
+        #toggle-ticking-sound:hover {
+            color: #5a778c;
+        }
+
+        body.dark-mode #toggle-ticking-sound {
+            color: #e8e6e3;
+        }
+
+        body.dark-mode #toggle-ticking-sound:hover {
+            color: #ffffff;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Title -->
+    <h1 id="app-title">Now Do This</h1>
+
+    <div id="container">
+        <!-- Settings Icon -->
+        <div id="settings-icon"><i class="fas fa-cog"></i></div>
+        <!-- Settings Menu -->
+        <div id="settings-menu">
+            <div id="close-settings"></div>
+            <label>
+                <input type="checkbox" id="dark-mode-toggle" checked>
+                <i class="fas fa-moon" aria-hidden="true" style="margin-right: 8px;"></i> Enable Dark Mode
+            </label>
+        </div>
+        <div id="content">
+            <div id="task" class="highlight">Click "Edit List" to add tasks.</div>
+            <div id="all_done">All done!</div>
+
+            <div id="input">
+                <textarea id="raw_list" placeholder="Enter your tasks here..."></textarea>
+                <button class="button" id="ready">Ready</button>
+                <!-- Info Icon placed under the "Ready" button -->
+                <div id="info-icon"><i class="fas fa-info-circle"></i></div>
+            </div>
+
+            <!-- Buttons placed under the task display -->
+            <div id="buttons">
+                <button class="button" id="go">Go</button>
+                <button class="button" id="done">Done</button>
+                <button class="button" id="edit">Edit List</button>
+            </div>
+
+            <!-- Completed Tasks Section -->
+            <div id="completed-tasks" style="display: none;">
+                <div id="completed-tasks-header">
+                    <h3>Completed Tasks ✅</h3>
+                    <button id="toggle-completed-tasks" title="Hide Completed Tasks"><i class="fas fa-eye-slash"></i></button>
+                </div>
+                <ul id="completed-list"></ul>
+            </div>
+
+            <!-- About Section -->
+            <div id="about">
+                <div id="close-about"></div>
+                <p>NowDoThis is a simple, one-at-a-time to-do list app, inspired by the original <a href="https://web.archive.org/web/20170122033727/http://nowdothis.com/">nowdothis.com</a></p>
+            </div>
+        </div>
+
+        <div id="timer">
+            <!-- Progress Ring -->
+            <div class="progress-ring" id="progress-ring">
+                <svg width="150" height="150">
+                    <circle
+                        stroke="#6c8ea4"
+                        stroke-width="10"
+                        fill="transparent"
+                        r="70"
+                        cx="75"
+                        cy="75"
+                    />
+                </svg>
+                <div contenteditable="true" id="timer-display">00:00</div>
+            </div>
+            <div id="timer-controls">
+                <!-- Sound Toggle Buttons Container -->
+                <div id="sound-toggle-buttons">
+                    <!-- Notification Sound Toggle Button -->
+                    <button id="toggle-notification-sound" title="Disable Notification Sound">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <!-- Ticking Sound Toggle Button -->
+                    <button id="toggle-ticking-sound" title="Disable Ticking Sound">
+                        <i class="fas fa-circle"></i>
+                    </button>
+                </div>
+            
+                <input type="range" id="time-slider" min="300" max="5400" step="300" value="1500">
+                <label for="time-slider">Adjust Time (5 min to 90 min)</label>
+            
+                <div id="timer-buttons">
+                    <button class="button" id="start-timer" title="Start">
+                        <i class="fas fa-play" aria-hidden="true"></i>
+                    </button>
+                    <button class="button" id="pause-timer" title="Pause">
+                        <i class="fas fa-pause" aria-hidden="true"></i>
+                    </button>
+                    <button class="button" id="reset-timer" title="Reset">
+                        <i class="fas fa-redo" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>            
+        </div>
+    </div>
+
+    <!-- Time's Up Modal -->
+    <div id="times-up-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-times-up">&times;</span>
+            <p>Time's up!</p>
+        </div>
+    </div>
+
+    <audio id="times-up-sound" src="assets/times-up.mp3"></audio>
+    <audio id="ticking-sound" src="assets/ticking.mp3" loop></audio>
+
+    <script>
+        const taskDisplay = document.getElementById("task");
+        const allDoneDisplay = document.getElementById("all_done");
+        const doneButton = document.getElementById("done");
+        const goButton = document.getElementById("go");
+        const editButton = document.getElementById("edit");
+        const inputContainer = document.getElementById("input");
+        const rawListTextarea = document.getElementById("raw_list");
+        const readyButton = document.getElementById("ready");
+        const aboutSection = document.getElementById("about");
+        const buttonsContainer = document.getElementById("buttons");
+        const infoIcon = document.getElementById("info-icon");
+        const closeAbout = document.getElementById("close-about");
+        const completedTasksSection = document.getElementById("completed-tasks");
+        const completedList = document.getElementById("completed-list");
+        const toggleCompletedTasksButton = document.getElementById("toggle-completed-tasks");
+
+        // Settings Elements
+        const settingsIcon = document.getElementById("settings-icon");
+        const settingsMenu = document.getElementById("settings-menu");
+        const closeSettings = document.getElementById("close-settings");
+        const darkModeToggle = document.getElementById("dark-mode-toggle");
+
+        // Timer Elements
+        const timerDisplay = document.getElementById("timer-display");
+        const timeSlider = document.getElementById("time-slider");
+        const startTimerButton = document.getElementById("start-timer");
+        const pauseTimerButton = document.getElementById("pause-timer");
+        const resetTimerButton = document.getElementById("reset-timer");
+        const timesUpSound = document.getElementById("times-up-sound");
+        const progressRing = document.querySelector('.progress-ring circle');
+        const toggleNotificationSoundButton = document.getElementById("toggle-notification-sound");
+        const tickingSound = document.getElementById("ticking-sound");
+        const toggleTickingSoundButton = document.getElementById("toggle-ticking-sound");
+
+
+        // Get modal elements
+        const timesUpModal = document.getElementById('times-up-modal');
+        const closeTimesUp = document.getElementById('close-times-up');
+
+
+        let tasks = [];
+        let currentTaskIndex = 0;
+        let completedTasks = [];
+        let timerInterval;
+        let totalTime = 1500; // Default to 25 minutes (1500 seconds)
+        let remainingTime = totalTime;
+        let isTimerRunning = false;
+        let isTickingSoundEnabled = true; // Ticking sound is enabled by default
+
+        // Progress Ring Setup
+        const radius = progressRing.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressRing.style.strokeDashoffset = circumference;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            progressRing.style.strokeDashoffset = offset;
+        }
+
+        // Show the next task
+        function showTask() {
+            if (tasks.length === 0) {
+                // No tasks, show input container
+                inputContainer.style.display = "block";
+                taskDisplay.style.display = "none";
+                allDoneDisplay.style.display = "none";
+                buttonsContainer.style.display = "none";
+                completedTasksSection.style.display = completedTasks.length ? "block" : "none";
+            } else if (currentTaskIndex < tasks.length) {
+                taskDisplay.textContent = tasks[currentTaskIndex];
+                allDoneDisplay.style.display = "none";
+                taskDisplay.style.display = "block";
+                inputContainer.style.display = "none";
+                buttonsContainer.style.display = "flex";
+                completedTasksSection.style.display = completedTasks.length ? "block" : "none";
+            } else {
+                taskDisplay.style.display = "none";
+                allDoneDisplay.style.display = "block";
+                inputContainer.style.display = "none";
+                buttonsContainer.style.display = "flex";
+                completedTasksSection.style.display = completedTasks.length ? "block" : "none";
+            }
+        }
+
+        // Mark the current task as done
+        doneButton.addEventListener("click", () => {
+            // Add current task to completed tasks
+            if (currentTaskIndex < tasks.length) {
+                completedTasks.push(tasks[currentTaskIndex]);
+                updateCompletedTasks();
+            }
+            currentTaskIndex++;
+            // Reset and pause the timer
+            resetTimer();
+            showTask();
+        });
+
+
+        // Mark the current task as done
+        goButton.addEventListener("click", () => {
+            // Reset and pause the timer
+            resetTimer();
+            startTimer();
+        });
+
+        // Open edit mode
+        editButton.addEventListener("click", () => {
+            taskDisplay.style.display = "none";
+            allDoneDisplay.style.display = "none";
+            inputContainer.style.display = "block";
+            buttonsContainer.style.display = "none";
+            rawListTextarea.value = tasks.join("\n");
+        });
+
+        // Save the new list
+        readyButton.addEventListener("click", () => {
+            tasks = rawListTextarea.value.split("\n").filter(task => task.trim() !== "");
+            currentTaskIndex = 0;
+            completedTasks = [];
+            updateCompletedTasks();
+            inputContainer.style.display = "none";
+            // Set timer to 25 minutes and start
+            totalTime = 1500;
+            remainingTime = totalTime;
+            updateTimerDisplay();
+            startTimer();
+            showTask();
+        });
+
+        // Info icon toggle
+        infoIcon.addEventListener("click", () => {
+            aboutSection.style.display = aboutSection.style.display === "block" ? "none" : "block";
+        });
+
+        closeAbout.addEventListener("click", () => {
+            aboutSection.style.display = "none";
+        });
+
+        // Settings icon toggle
+        settingsIcon.addEventListener("click", () => {
+            settingsMenu.style.display = settingsMenu.style.display === "block" ? "none" : "block";
+        });
+
+        closeSettings.addEventListener("click", () => {
+            settingsMenu.style.display = "none";
+        });
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener("change", () => {
+            if (darkModeToggle.checked) {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+        });
+
+        // On page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const darkModePreference = localStorage.getItem('darkMode');
+
+            // If user has disabled dark mode before
+            if (darkModePreference === 'disabled') {
+                darkModeToggle.checked = false;
+                document.body.classList.remove('dark-mode');
+            } else {
+                // Default to dark mode
+                darkModeToggle.checked = true;
+                document.body.classList.add('dark-mode');
+            }
+
+            // Listen for changes in the checkbox
+            darkModeToggle.addEventListener('change', () => {
+                if (darkModeToggle.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            });
+
+            // Load notification sound preference
+            const notificationPreference = localStorage.getItem('notificationSound');
+            if (notificationPreference === 'disabled') {
+                isNotificationEnabled = false;
+                toggleNotificationSoundButton.innerHTML = '<i class="fas fa-bell-slash"></i>';
+                toggleNotificationSoundButton.title = "Enable Notification Sound";
+            } else {
+                isNotificationEnabled = true;
+                toggleNotificationSoundButton.innerHTML = '<i class="fas fa-bell"></i>';
+                toggleNotificationSoundButton.title = "Disable Notification Sound";
+            }
+
+            // Load ticking sound preference
+            const tickingSoundPreference = localStorage.getItem('tickingSound');
+            if (tickingSoundPreference === 'disabled') {
+                isTickingSoundEnabled = false;
+                toggleTickingSoundButton.innerHTML = '<i class="fas fa-clock"></i>';
+                toggleTickingSoundButton.title = "Enable Ticking Sound";
+            } else {
+                isTickingSoundEnabled = true;
+                toggleTickingSoundButton.innerHTML = '<i class="fas fa-circle"></i>';
+                toggleTickingSoundButton.title = "Disable Ticking Sound";
+            }
+        });
+
+        // Hide/Show Completed Tasks
+        let completedTasksVisible = true;
+        toggleCompletedTasksButton.addEventListener("click", () => {
+            completedTasksVisible = !completedTasksVisible;
+            if (completedTasksVisible) {
+                completedList.style.display = "block";
+                toggleCompletedTasksButton.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                toggleCompletedTasksButton.title = "Hide Completed Tasks";
+            } else {
+                completedList.style.display = "none";
+                toggleCompletedTasksButton.innerHTML = '<i class="fas fa-eye"></i>';
+                toggleCompletedTasksButton.title = "Show Completed Tasks";
+            }
+        });
+
+        // Timer functionality
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            updateTimerDisplay(); // Ensure display is updated before starting
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    remainingTime = 0;
+                    updateTimerDisplay();
+                    if (enableNotificationCheckbox.checked) {
+                        timesUpSound.play();
+                    }
+                    // Show the modal instead of alert
+                    timesUpModal.style.display = 'block';
+                    isTimerRunning = false;
+                } else {
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        // Close the modal when the user clicks on <span> (x)
+        closeTimesUp.addEventListener('click', () => {
+            timesUpModal.style.display = 'none';
+        });
+
+        // Also close the modal when the user clicks anywhere outside of the modal content
+        window.addEventListener('click', (event) => {
+            if (event.target == timesUpModal) {
+                timesUpModal.style.display = 'none';
+            }
+        });
+
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            // Pause the ticking sound
+            tickingSound.pause();
+        }
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(remainingTime / 60);
+            let seconds = remainingTime % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const percent = totalTime > 0 ? (remainingTime / totalTime) * 100 : 0;
+            setProgress(percent);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            remainingTime = totalTime;
+            isTimerRunning = false;
+            updateTimerDisplay();
+            // Pause and reset the ticking sound
+            tickingSound.pause();
+            tickingSound.currentTime = 0;
+        }
+
+        // Editable timer display
+        timerDisplay.addEventListener("input", () => {
+            const timeParts = timerDisplay.textContent.split(":");
+            if (timeParts.length === 2) {
+                let minutes = parseInt(timeParts[0]);
+                let seconds = parseInt(timeParts[1]);
+                if (!isNaN(minutes) && !isNaN(seconds)) {
+                    remainingTime = minutes * 60 + seconds;
+                    totalTime = remainingTime;
+                    updateTimerDisplay();
+                }
+            }
+        });
+
+        // Time slider functionality
+        timeSlider.addEventListener("input", () => {
+            totalTime = parseInt(timeSlider.value);
+            remainingTime = totalTime;
+            updateTimerDisplay();
+        });
+
+        startTimerButton.addEventListener("click", () => {
+            if (remainingTime > 0) {
+                startTimer();
+            }
+        });
+
+        pauseTimerButton.addEventListener("click", () => {
+            pauseTimer();
+        });
+
+        resetTimerButton.addEventListener("click", () => {
+            resetTimer();
+        });
+
+        // Update completed tasks display
+        function updateCompletedTasks() {
+            completedList.innerHTML = '';
+            completedTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = task;
+                completedList.appendChild(li);
+            });
+            completedTasksSection.style.display = completedTasks.length ? "block" : "none";
+        }
+
+        // New variable to track notification sound state
+        let isNotificationEnabled = true; // Sound is enabled by default
+
+
+        // Toggle notification sound
+        toggleNotificationSoundButton.addEventListener("click", () => {
+            isNotificationEnabled = !isNotificationEnabled;
+            if (isNotificationEnabled) {
+                toggleNotificationSoundButton.innerHTML = '<i class="fas fa-bell"></i>';
+                toggleNotificationSoundButton.title = "Disable Notification Sound";
+                localStorage.setItem('notificationSound', 'enabled');
+            } else {
+                toggleNotificationSoundButton.innerHTML = '<i class="fas fa-bell-slash"></i>';
+                toggleNotificationSoundButton.title = "Enable Notification Sound";
+                localStorage.setItem('notificationSound', 'disabled');
+            }
+        });
+
+        toggleTickingSoundButton.addEventListener("click", () => {
+        isTickingSoundEnabled = !isTickingSoundEnabled;
+        if (isTickingSoundEnabled) {
+            toggleTickingSoundButton.innerHTML = '<i class="fas fa-clock"></i>';
+            toggleTickingSoundButton.title = "Disable Ticking Sound";
+            localStorage.setItem('tickingSound', 'enabled');
+            // Start playing the ticking sound if the timer is running
+            if (isTimerRunning) {
+                tickingSound.play();
+            }
+        } else {
+            toggleTickingSoundButton.innerHTML = '<i class="fas fa-circle"></i>';
+            toggleTickingSoundButton.title = "Enable Ticking Sound";
+            localStorage.setItem('tickingSound', 'disabled');
+            // Pause the ticking sound
+            tickingSound.pause();
+            tickingSound.currentTime = 0;
+        }
+    });
+
+
+        // Update the startTimer function
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            updateTimerDisplay(); // Ensure display is updated before starting
+
+            // Play the ticking sound if enabled
+            if (isTickingSoundEnabled) {
+                tickingSound.play();
+            }
+
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    remainingTime = 0;
+                    updateTimerDisplay();
+                    if (isNotificationEnabled) {
+                        timesUpSound.play();
+                    }
+                    // Stop the ticking sound
+                    tickingSound.pause();
+                    tickingSound.currentTime = 0;
+                    // Show the modal instead of alert
+                    timesUpModal.style.display = 'block';
+                    isTimerRunning = false;
+                } else {
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+
+
+        // Initial display
+        showTask();
+        resetTimer();
+    </script>
+</body>
+</html>
